@@ -43,14 +43,17 @@ This report identifies **25+ improvement opportunities** across 6 categories for
 ### 1.1 🥇 Consolidate ConfigManager (Priority 1)
 
 **Current Issue**: `ConfigManager` is duplicated in two locations:
+
 - `work_dashboard.py` lines 15-28
 - `config/manager.py` lines 6-22
 
 **LEVER Analysis**:
+
 - ❌ Violates **E**liminate (duplication)
 - ❌ Violates **R**educe (complexity)
 
 **Recommendation**:
+
 ```python
 # DELETE from work_dashboard.py lines 15-28
 # USE existing config/manager.py
@@ -78,6 +81,7 @@ from config.manager import ConfigManager
 | `folder_card.py` | 436 | `except OSError` | Good ✓ |
 
 **Recommendation** (per CLAUDE.md MUST rules):
+
 ```python
 # ❌ Current
 except: return {"workspaces": {}}
@@ -98,6 +102,7 @@ except (json.JSONDecodeError, OSError) as e:
 **Current Issue**: No type hints in codebase
 
 **Example Improvements**:
+
 ```python
 # ❌ Current (folder_card.py line 351)
 def refresh_files(self, _=None):
@@ -124,6 +129,7 @@ def set_tag(cls, path: str, color: Optional[str] = None, note: Optional[str] = N
 **Current Issue**: `folder_card.py` is **646 lines** - too large for single file
 
 **LEVER Analysis**:
+
 - ❌ Violates **R**educe (complexity)
 - Should **L**everage separate modules
 
@@ -145,11 +151,13 @@ def set_tag(cls, path: str, color: Optional[str] = None, note: Optional[str] = N
 ### 2.2 Improve MetadataService (Priority 8)
 
 **Current Issues**:
+
 1. No automatic initialization
 2. Must manually call `load_tags()` before use
 3. Saves on every tag change (inefficient)
 
 **Recommendation**:
+
 ```python
 class MetadataService:
     _tags = {}
@@ -193,6 +201,7 @@ class MetadataService:
 **Current Issue**: Uses `print()` for all errors
 
 **Recommendation**:
+
 ```python
 # utils/logger.py (NEW - following OPTIMIZATION_PRINCIPLES)
 import logging
@@ -215,6 +224,7 @@ logger = setup_logger()
 ```
 
 **Usage**:
+
 ```python
 # Replace print() calls
 logger.error(f"Error loading config: {e}")
@@ -232,6 +242,7 @@ logger.warning(f"Icon not found: {path}")
 **Current Issue**: No feedback for successful operations
 
 **Recommendation** (extend existing `show_indicator` method):
+
 ```python
 # In folder_card.py, enhance existing method
 def show_indicator(self, text: str, duration: int = 2000, color: str = None):
@@ -264,10 +275,12 @@ def show_indicator(self, text: str, duration: int = 2000, color: str = None):
 **Current Issue**: Icons loaded per-panel (duplicated in memory)
 
 **LEVER Analysis**:
+
 - ❌ Violates **E**liminate (duplication)
 - Should **L**everage shared resources
 
 **Recommendation** (extend existing services):
+
 ```python
 # services/icon_service.py (NEW)
 import tkinter as tk
@@ -308,6 +321,7 @@ class IconService:
 **Current Issue**: Loading 1000+ files causes lag
 
 **Recommendation**:
+
 - Only render visible items
 - Lazy load as user scrolls
 - Paginate results (50 items per page)
@@ -337,6 +351,7 @@ def refresh_files(self, page: int = 1, page_size: int = 100):
 **Current Issue**: `utils/files.py` uses Windows-only `os.startfile()`
 
 **Recommendation**:
+
 ```python
 # utils/files.py - Extend existing function
 import subprocess
@@ -368,6 +383,7 @@ def open_path(path: str) -> bool:
 **Current Issue**: `CONFIG_FILE` and `TAGS_FILE` are relative paths that depend on CWD
 
 **Recommendation**:
+
 ```python
 # config/manager.py - Improve path handling
 import os
@@ -407,6 +423,7 @@ CONFIG_FILE = os.path.join(get_app_data_dir(), "dashboard_config.json")
 | `test_debouncer.py` | Debounce timing | Low |
 
 **Example New Test**:
+
 ```python
 # tests/test_metadata_edge_cases.py
 class TestMetadataEdgeCases(unittest.TestCase):
@@ -451,22 +468,27 @@ These improvements follow **OPTIMIZATION_PRINCIPLES.md** - no new files, just ex
 ## Implementation Plan (If Starting Today)
 
 ### Phase 1: Foundation (Day 1)
+
 1. ✅ Consolidate ConfigManager
-2. ✅ Fix bare except clauses
-3. ✅ Add type hints to services
-4. ✅ Cross-platform file opening
+2. ✅ Robust Startup Script (New)
+3. ✅ Fix bare except clauses
+4. ✅ Add type hints to services
+5. ✅ Cross-platform file opening
 
 ### Phase 2: Architecture (Day 2-3)
+
 5. ✅ Split folder_card.py into modules
 6. ✅ Enhance MetadataService
 7. ✅ Add IconService singleton
 
 ### Phase 3: Quality (Day 4-5)
+
 8. ✅ Add logging system
 9. ✅ Expand test coverage
 10. ✅ Add user feedback indicators
 
 ### Phase 4: Performance (Week 2)
+
 11. ✅ Virtual scrolling for large dirs
 12. ✅ Background file loading
 13. ✅ Optimized search indexing

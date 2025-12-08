@@ -1,7 +1,15 @@
-import os
-import json
+def get_app_data_dir():
+    """Get consistent app data directory across platforms."""
+    if os.name == 'nt':
+        base = os.environ.get('APPDATA', os.path.expanduser('~'))
+    else:
+        base = os.path.expanduser('~/.config')
+    
+    app_dir = os.path.join(base, 'WorkDashboard')
+    os.makedirs(app_dir, exist_ok=True)
+    return app_dir
 
-CONFIG_FILE = "dashboard_config.json"
+CONFIG_FILE = os.path.join(get_app_data_dir(), "dashboard_config.json")
 
 class ConfigManager:
     @staticmethod
