@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from services.metadata_service import MetadataService
 from services.clipboard import InternalClipboard
-from work_dashboard import ConfigManager
+from config.manager import ConfigManager
 
 class TestWorkDashboardFeatures(unittest.TestCase):
     def setUp(self):
@@ -35,7 +35,7 @@ class TestWorkDashboardFeatures(unittest.TestCase):
     def test_config_manager(self):
         # Test Save
         data = {"test_key": "test_value"}
-        with patch("work_dashboard.CONFIG_FILE", self.config_file):
+        with patch("config.manager.CONFIG_FILE", self.config_file):
             ConfigManager.save_config(data)
             self.assertTrue(os.path.exists(self.config_file))
             

@@ -8,24 +8,7 @@ import customtkinter as ctk
 # Import modular components
 from ui.folder_card import FolderCard
 from ui.styles import THEMES, ACCENT_COLORS
-
-# --- Configuration ---
-CONFIG_FILE = "dashboard_config.json"
-
-class ConfigManager:
-    @staticmethod
-    def load_config():
-        if os.path.exists(CONFIG_FILE):
-            try:
-                with open(CONFIG_FILE, 'r') as f: return json.load(f)
-            except: return {"workspaces": {}}
-        return {"workspaces": {}}
-
-    @staticmethod
-    def save_config(data):
-        try:
-            with open(CONFIG_FILE, 'w') as f: json.dump(data, f)
-        except Exception as e: print(f"Error saving config: {e}")
+from config.manager import ConfigManager
 
 # --- Main App ---
 class WorkDashboard(ctk.CTk):
@@ -289,7 +272,8 @@ class WorkDashboard(ctk.CTk):
                     self.config_data["layout_mode"] = self.layout_mode
                     self.save_config()
                     self.setup_layout(n, self.layout_mode)
-            except: pass
+            except ValueError:
+                pass  # Invalid input, silently ignore
 
     def get_panels(self): return self.panels
     def refresh_all(self): 
