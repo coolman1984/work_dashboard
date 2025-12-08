@@ -150,15 +150,50 @@ class WorkDashboard(ctk.CTk):
         self.config_data["font_size"] = self.base_font_size; self.save_config()
 
     def update_global_styles(self):
-        style = ttk.Style(); style.theme_use("clam")
-        row_height = int(self.base_font_size * 2.5)
+        style = ttk.Style()
+        style.theme_use("clam")
+        
+        # Modern Layout Metrics
+        # Increase row height for a more comfortable, airy feel
+        row_height = int(self.base_font_size * 2.8)
         font_spec = ("Segoe UI", self.base_font_size)
-        head_font = ("Segoe UI", self.base_font_size + 1, "bold")
+        head_font = ("Segoe UI", self.base_font_size, "bold")
+        
         t = THEMES[self.current_theme]
-        bg = t["card"]; fg = t["text"]
-        style.configure("Treeview", background=bg, foreground=fg, fieldbackground=bg, bordercolor=t["bg"], font=font_spec, rowheight=row_height)
-        style.map('Treeview', background=[('selected', '#0078D4')], foreground=[('selected', 'white')])
-        style.configure("Treeview.Heading", background=t["bg"], foreground=fg, relief="flat", font=head_font, padding=(10, 12))
+        bg = t["card"]
+        fg = t["text"]
+        
+        # Configure Treeview for a modern flat look
+        style.configure("Treeview", 
+                        background=bg, 
+                        foreground=fg, 
+                        fieldbackground=bg, 
+                        borderwidth=0, 
+                        font=font_spec, 
+                        rowheight=row_height)
+        
+        # Remove borders and selection borders
+        style.layout("Treeview", [('Treeview.treearea', {'sticky': 'nswe'})]) 
+        
+        # Modern Selection Color (System Blue or distinct grey)
+        selection_bg = "#007AFF" if self.current_theme == "Light" else "#0A84FF"
+        style.map('Treeview', 
+                  background=[('selected', selection_bg)], 
+                  foreground=[('selected', 'white')])
+        
+        # Flat Headers with subtle separation
+        style.configure("Treeview.Heading", 
+                        background=t["bg"], 
+                        foreground=fg, 
+                        relief="flat", 
+                        borderwidth=0,
+                        font=head_font, 
+                        padding=(12, 12))
+                        
+        style.map("Treeview.Heading",
+                  background=[("active", t["bg"])],  # No hover effect on header bg to keep it clean
+                  foreground=[("active", fg)])
+
         for p in self.panels: p.update_font_size(self.base_font_size)
 
     # --- WORKSPACES ---
