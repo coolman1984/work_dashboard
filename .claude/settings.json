@@ -1,0 +1,59 @@
+{
+    "hooks": {
+        "PreToolUse": [
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "if [[ \"$CLAUDE_TOOL_INPUT\" == *\"rm -rf\"* ]] || [[ \"$CLAUDE_TOOL_INPUT\" == *\"rmdir /s\"* ]]; then echo 'BLOCKED: Dangerous delete command. Ask for confirmation first.' && exit 2; fi"
+                    }
+                ]
+            },
+            {
+                "matcher": "Bash",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "if [[ \"$CLAUDE_TOOL_INPUT\" == *\"git push -f\"* ]] || [[ \"$CLAUDE_TOOL_INPUT\" == *\"git push --force\"* ]]; then echo 'BLOCKED: Force push requires explicit approval.' && exit 2; fi"
+                    }
+                ]
+            }
+        ],
+        "PostToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "if [[ \"$CLAUDE_FILE_PATHS\" =~ \\.py$ ]]; then python -m py_compile \"$CLAUDE_FILE_PATHS\" 2>/dev/null && echo 'Syntax OK' || echo 'Syntax check failed'; fi"
+                    }
+                ]
+            }
+        ]
+    },
+    "permissions": {
+        "allow": [
+            "Read(*)",
+            "Grep(*)",
+            "Bash(python*)",
+            "Bash(pip*)",
+            "Bash(git status*)",
+            "Bash(git log*)",
+            "Bash(git diff*)",
+            "Bash(rg*)",
+            "Write(*.py)",
+            "Write(*.md)",
+            "Edit(*.py)",
+            "Edit(*.md)"
+        ],
+        "deny": [
+            "Bash(rm -rf*)",
+            "Bash(rmdir /s*)",
+            "Bash(git push -f*)",
+            "Bash(git push --force*)",
+            "Write(*.json)",
+            "Edit(*.json)"
+        ]
+    }
+}
