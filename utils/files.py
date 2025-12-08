@@ -2,9 +2,20 @@ import os
 import datetime
 from tkinter import messagebox
 
+import platform
+import subprocess
+
 def open_path(path):
-    try: os.startfile(path)
-    except OSError as e: messagebox.showerror("Error", f"Could not open path:\n{e}")
+    try:
+        system = platform.system()
+        if system == 'Windows':
+            os.startfile(path)
+        elif system == 'Darwin':  # macOS
+            subprocess.run(['open', path], check=True)
+        else:  # Linux
+            subprocess.run(['xdg-open', path], check=True)
+    except (OSError, subprocess.CalledProcessError) as e:
+        messagebox.showerror("Error", f"Could not open path:\n{e}")
 
 def get_file_info(filepath):
     try:

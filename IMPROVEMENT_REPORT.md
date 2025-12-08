@@ -477,9 +477,9 @@ These improvements follow **OPTIMIZATION_PRINCIPLES.md** - no new files, just ex
 
 ### Phase 2: Architecture (Day 2-3)
 
-5. ✅ Split folder_card.py into modules
-6. ✅ Enhance MetadataService
-7. ✅ Add IconService singleton
+6. ✅ Split folder_card.py (Partially - IconService extracted)
+7. ✅ Enhance MetadataService
+8. ✅ Add IconService singleton
 
 ### Phase 3: Quality (Day 4-5)
 
