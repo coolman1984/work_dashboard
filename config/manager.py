@@ -1,3 +1,6 @@
+import os
+import json
+
 def get_app_data_dir():
     """Get consistent app data directory across platforms."""
     if os.name == 'nt':
