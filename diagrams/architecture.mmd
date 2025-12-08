@@ -1,0 +1,8 @@
+graph TD
+UI[UI Layer] --> Core[Core Services]
+Core --> Watchdog[Watchdog Service]
+Core --> Metadata[Metadata Service]
+Core --> Clipboard[Clipboard Service]
+Core --> Preview[Preview Service]
+DataStore[(Data Stores)]
+Core --> DataStore
