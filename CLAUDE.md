@@ -319,3 +319,28 @@ short_path = self.current_path if len(self.current_path) < 40 else "..." + self.
 ```
 
 **Why Changed**: Improved visibility and user experience of dashboard UI.
+
+### 2025-12-09: Built Windows Executable
+
+**Action**: Built standalone .exe using PyInstaller 6.17.0
+
+**Build command**:
+```bash
+.venv\Scripts\pyinstaller.exe --onefile --windowed --name "WorkDashboard" --add-data "icons;icons" --clean work_dashboard.py
+```
+
+**Output**: `dist/WorkDashboard.exe` (17 MB)
+
+**Fix Made During Build**: Removed git merge conflict markers from `work_dashboard.py` (lines 2 and 304-306).
+
+**How to Rebuild**:
+```bash
+# Ensure PyInstaller is installed
+.venv\Scripts\pip.exe install pyinstaller
+
+# Build the executable
+.venv\Scripts\pyinstaller.exe --onefile --windowed --name "WorkDashboard" --add-data "icons;icons" --clean work_dashboard.py
+
+# Output will be in dist/WorkDashboard.exe
+```
+
