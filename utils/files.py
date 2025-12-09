@@ -12,5 +12,4 @@ def get_file_info(filepath):
         size_mb = stats.st_size / (1024 * 1024)
         mod_time = datetime.datetime.fromtimestamp(stats.st_mtime).strftime('%Y-%m-%d %H:%M')
         return stats.st_size, size_mb, mod_time
-    except OSError:
-        return 0, 0.0, "Unknown"
+    except: return 0, 0.0, "Unknown"
