@@ -32,7 +32,7 @@ class FolderCard(ctk.CTkFrame):
     def __init__(self, parent, panel_id, accent_color, config_data, save_callback,
                  get_panels_callback, app_theme_data, base_font_size,
                  toggle_focus_callback, is_focused=False):
-        super().__init__(parent, corner_radius=4, border_width=0, fg_color=app_theme_data["card"])
+        super().__init__(parent, corner_radius=10, border_width=0, fg_color=app_theme_data["card"])
 
         self.panel_id = str(panel_id)
         self.config_data = config_data
@@ -176,7 +176,7 @@ class FolderCard(ctk.CTkFrame):
             self.controls_frame, text="📂 Change",
             command=self.browse_folder,
             font=("Segoe UI", self.base_font_size, "bold"),
-            height=30, corner_radius=6,
+            height=32, corner_radius=8,
             fg_color=self.accent_color, text_color="#ffffff"
         )
         self.btn_browse.pack(side="left", padx=(0, 5))
@@ -185,7 +185,7 @@ class FolderCard(ctk.CTkFrame):
         self.btn_up = ctk.CTkButton(
             self.controls_frame, text="⬆", command=self.go_up,
             font=("Segoe UI", self.base_font_size, "bold"),
-            width=30, height=30, corner_radius=6,
+            width=32, height=32, corner_radius=8,
             fg_color=self.theme_data["bg"], text_color=self.theme_data["text"],
             hover_color=self.theme_data["hover"]
         )
@@ -196,7 +196,7 @@ class FolderCard(ctk.CTkFrame):
             self.controls_frame, text="↗ Open",
             command=self._open_current_folder,
             font=("Segoe UI", self.base_font_size),
-            height=30, corner_radius=6,
+            height=32, corner_radius=8,
             fg_color=self.theme_data["bg"], text_color=self.theme_data["text"],
             hover_color=self.theme_data["hover"]
         )
@@ -209,10 +209,10 @@ class FolderCard(ctk.CTkFrame):
 
         self.search_entry = ctk.CTkEntry(
             self.controls_frame, textvariable=self.search_var,
-            width=140, height=30,
+            width=140, height=32,
             placeholder_text="🔍 Search...",
             font=("Segoe UI", self.base_font_size),
-            corner_radius=6, border_width=1
+            corner_radius=8, border_width=0
         )
         self.search_entry.pack(side="right")
 
@@ -220,12 +220,12 @@ class FolderCard(ctk.CTkFrame):
         self.filter_var = ctk.StringVar(value="All Types")
         self.filter_combo = ctk.CTkComboBox(
             self.controls_frame, variable=self.filter_var,
-            width=110, height=30,
+            width=110, height=32,
             values=['All Types', 'Excel', 'PDF', 'Word', 'Images', 'Text'],
             command=self.refresh_files,
             font=("Segoe UI", self.base_font_size),
             dropdown_font=("Segoe UI", self.base_font_size),
-            corner_radius=6, border_width=1
+            corner_radius=8, border_width=0
         )
         self.filter_combo.pack(side="right", padx=5)
 
