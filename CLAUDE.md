@@ -251,3 +251,71 @@ These files provide detailed, context-specific guidance.
 3. **Icon References**: Keep icon PhotoImage objects alive to prevent garbage collection
 4. **Focus Mode**: Destroys and recreates container - see `toggle_focus_mode()`
 5. **Config Duplication**: `ConfigManager` exists in both `work_dashboard.py` and `config/manager.py`
+
+---
+
+## Change History (For AI Reference)
+
+This section documents recent changes so AI can revert if needed.
+
+### 2025-12-09: Fixed Bare Except Clauses
+
+**Problem**: Bare `except:` clauses were hiding bugs by catching ALL exceptions.
+
+**Changes Made**:
+
+| File | Line | Before | After |
+|------|------|--------|-------|
+| `work_dashboard.py` | 21 | `except:` | `except (json.JSONDecodeError, OSError) as e:` |
+| `work_dashboard.py` | 294 | `except: pass` | `except ValueError: pass` |
+| `utils/files.py` | 15 | `except:` | `except OSError:` |
+
+**How to Revert**:
+```python
+# work_dashboard.py line 21 - REVERT TO:
+except: return {"workspaces": {}}
+
+# work_dashboard.py line 294 - REVERT TO:
+except: pass
+
+# utils/files.py line 15 - REVERT TO:
+except: return 0, 0.0, "Unknown"
+```
+
+**Why Changed**: Bare excepts hide bugs. Specific exceptions allow proper debugging.
+
+### 2025-12-09: UI Improvements (5 fixes)
+
+**Changes Made**:
+
+| # | Fix | File | Line | Change |
+|---|-----|------|------|--------|
+| 1 | Date column | `ui/folder_card.py` | 258 | Width 160→180px, anchor center→e |
+| 2 | Row hover | `work_dashboard.py` | 131-132 | Added `('active', t["hover"])` to style.map |
+| 3 | Empty placeholder | `ui/folder_card.py` | 285-294, 388-392 | Added placeholder label, show/hide logic |
+| 4 | Breadcrumb | `ui/folder_card.py` | 308-318 | Show last 3 folders instead of char limit |
+| 5 | Analytics bar | `ui/analytics_bar.py` | 40, 50-53, 111, 126 | Height 8→12px, font +2, centered |
+
+**How to Revert**:
+```python
+# 1. folder_card.py line 258 - REVERT TO:
+self.tree.column("date", width=160, anchor="center", stretch=False)
+
+# 2. work_dashboard.py line 131-132 - REVERT TO:
+style.map('Treeview', background=[('selected', '#0078D4')], foreground=[('selected', 'white')])
+
+# 3. folder_card.py - DELETE lines 285-294 (empty_placeholder creation)
+#    and lines 388-392 (place/place_forget calls)
+
+# 4. folder_card.py update_header - REVERT TO:
+short_path = self.current_path if len(self.current_path) < 40 else "..." + self.current_path[-40:]
+
+# 5. analytics_bar.py - REVERT:
+#    Line 40: height=8
+#    Line 50: font=(..., base_font_size - 2, ...)
+#    Line 53: anchor="e"
+#    Line 111: segment_width, 8
+#    Line 126: new_size - 2
+```
+
+**Why Changed**: Improved visibility and user experience of dashboard UI.

@@ -255,7 +255,7 @@ class FolderCard(ctk.CTkFrame):
         self.tree.heading("size", text="Size", command=lambda: self._sort_tree("size", False))
         self.tree.heading("date", text="Date", command=lambda: self._sort_tree("date", False))
         self.tree.column("size", width=100, anchor="e", stretch=False)
-        self.tree.column("date", width=160, anchor="center", stretch=False)
+        self.tree.column("date", width=180, anchor="e", stretch=False)  # Widened and right-aligned
 
         # Scrollbars
         vsb = ttk.Scrollbar(self.tree_container, orient="vertical", command=self.tree.yview)
@@ -282,6 +282,16 @@ class FolderCard(ctk.CTkFrame):
         # Event bindings
         self.tree.bind("<Double-1>", self._on_double_click)
         self.tree.bind("<Button-3>", self._on_right_click)
+        
+        # Empty folder placeholder
+        self.empty_placeholder = ctk.CTkLabel(
+            self.tree_container,
+            text="📁\n\nNo folder selected\n\nClick '📂 Change' to browse",
+            font=("Segoe UI", self.base_font_size + 4),
+            text_color=self.theme_data["subtext"],
+            justify="center"
+        )
+        # Initially hidden (will show if no path)
 
     def _create_analytics_bar(self):
         """Create the analytics bar widget."""
@@ -295,11 +305,16 @@ class FolderCard(ctk.CTkFrame):
         if self.current_path and os.path.exists(self.current_path):
             folder_name = os.path.basename(self.current_path) or self.current_path
             self.title_label.configure(text=folder_name)
-            short_path = self.current_path if len(self.current_path) < 40 else "..." + self.current_path[-40:]
+            # Show last 2-3 folders for better readability
+            parts = self.current_path.replace("\\", "/").split("/")
+            if len(parts) > 3:
+                short_path = "..." + "/".join(parts[-3:])
+            else:
+                short_path = self.current_path
             self.path_label.configure(text=short_path)
         else:
             self.title_label.configure(text=f"Folder {self.panel_id}")
-            self.path_label.configure(text="Empty")
+            self.path_label.configure(text="Select a folder...")
 
     def browse_folder(self):
         """Open folder selection dialog."""
@@ -369,7 +384,12 @@ class FolderCard(ctk.CTkFrame):
         if not self.current_path or not os.path.exists(self.current_path):
             self.update_header()
             self.analytics_bar.update([])
+            # Show empty placeholder
+            self.empty_placeholder.place(relx=0.5, rely=0.5, anchor="center")
             return
+        
+        # Hide placeholder when folder is selected
+        self.empty_placeholder.place_forget()
 
         self.update_header()
         valid_exts = self._get_extensions()

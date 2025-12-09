@@ -18,7 +18,9 @@ class ConfigManager:
         if os.path.exists(CONFIG_FILE):
             try:
                 with open(CONFIG_FILE, 'r') as f: return json.load(f)
-            except: return {"workspaces": {}}
+            except (json.JSONDecodeError, OSError) as e:
+                print(f"Error loading config: {e}")
+                return {"workspaces": {}}
         return {"workspaces": {}}
 
     @staticmethod
@@ -127,7 +129,10 @@ class WorkDashboard(ctk.CTk):
         t = THEMES[self.current_theme]
         bg = t["card"]; fg = t["text"]
         style.configure("Treeview", background=bg, foreground=fg, fieldbackground=bg, bordercolor=t["bg"], font=font_spec, rowheight=row_height)
-        style.map('Treeview', background=[('selected', '#0078D4')], foreground=[('selected', 'white')])
+        # Added hover state for rows
+        style.map('Treeview', 
+                  background=[('selected', '#0078D4'), ('active', t["hover"])],
+                  foreground=[('selected', 'white')])
         style.configure("Treeview.Heading", background=t["bg"], foreground=fg, relief="flat", font=head_font, padding=(10, 12))
         for p in self.panels: p.update_font_size(self.base_font_size)
 
@@ -289,7 +294,8 @@ class WorkDashboard(ctk.CTk):
                     self.config_data["layout_mode"] = self.layout_mode
                     self.save_config()
                     self.setup_layout(n, self.layout_mode)
-            except: pass
+            except ValueError:
+                pass  # Invalid panel count input, ignore
 
     def get_panels(self): return self.panels
     def refresh_all(self): 

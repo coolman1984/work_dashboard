@@ -34,23 +34,23 @@ class AnalyticsBar(ctk.CTkFrame):
         self.theme_data = theme_data
         self.base_font_size = base_font_size
         
-        # Canvas for distribution bar (8px height)
+        # Canvas for distribution bar (increased height for visibility)
         self.stats_canvas = tk.Canvas(
             self,
-            height=8,
+            height=12,
             bg=theme_data["bg"],
             highlightthickness=0
         )
         self.stats_canvas.pack(fill="x", pady=(0, 4))
         
-        # Label for text stats
+        # Label for text stats (larger and centered for visibility)
         self.stats_label = ctk.CTkLabel(
             self,
             text="--",
-            font=("Segoe UI", base_font_size - 2, "bold"),
+            font=("Segoe UI", base_font_size, "bold"),
             text_color=theme_data["subtext"]
         )
-        self.stats_label.pack(anchor="e")
+        self.stats_label.pack(anchor="center")
 
     def update(self, files_data: List[Tuple[str, str, str, int]]) -> None:
         """Update analytics with new file data.
@@ -110,7 +110,7 @@ class AnalyticsBar(ctk.CTkFrame):
             segment_width = (count / total_files) * width
             self.stats_canvas.create_rectangle(
                 current_x, 0,
-                current_x + segment_width, 8,
+                current_x + segment_width, 12,  # Match new height
                 fill=color,
                 outline=""
             )
@@ -123,4 +123,4 @@ class AnalyticsBar(ctk.CTkFrame):
             new_size: New base font size
         """
         self.base_font_size = new_size
-        self.stats_label.configure(font=("Segoe UI", new_size - 2, "bold"))
+        self.stats_label.configure(font=("Segoe UI", new_size, "bold"))
