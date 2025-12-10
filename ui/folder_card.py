@@ -85,21 +85,36 @@ class FolderCard(ctk.CTkFrame):
 
     def _load_icons(self):
         """Load file type icons."""
+        import sys
+        
+        # Determine base path for icons
+        if getattr(sys, 'frozen', False):
+            # Running as .exe - icons are in the same folder as the executable
+            base_path = os.path.dirname(sys.executable)
+        else:
+            # Running as script - icons are relative to project root
+            base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        icons_folder = os.path.join(base_path, 'icons')
+        
         icon_paths = {
-            'folder': 'icons/folder.png',
-            'document': 'icons/document.png',
-            'spreadsheet': 'icons/spreadsheet.png',
-            'image': 'icons/image.png',
-            'code': 'icons/code.png',
-            'archive': 'icons/archive.png',
-            'executable': 'icons/executable.png',
-            'audio': 'icons/audio.png',
-            'video': 'icons/video.png',
-            'default': 'icons/file.png'
+            'folder': os.path.join(icons_folder, 'folder.png'),
+            'document': os.path.join(icons_folder, 'document.png'),
+            'spreadsheet': os.path.join(icons_folder, 'spreadsheet.png'),
+            'image': os.path.join(icons_folder, 'image.png'),
+            'code': os.path.join(icons_folder, 'code.png'),
+            'archive': os.path.join(icons_folder, 'archive.png'),
+            'executable': os.path.join(icons_folder, 'executable.png'),
+            'audio': os.path.join(icons_folder, 'audio.png'),
+            'video': os.path.join(icons_folder, 'video.png'),
+            'default': os.path.join(icons_folder, 'file.png')
         }
         for name, path in icon_paths.items():
             try:
-                self.icon_images[name] = tk.PhotoImage(file=path)
+                if os.path.exists(path):
+                    self.icon_images[name] = tk.PhotoImage(file=path)
+                else:
+                    self.icon_images[name] = None
             except Exception:
                 self.icon_images[name] = None
 

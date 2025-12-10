@@ -432,27 +432,39 @@ class WorkDashboard(ctk.CTk):
         scroll = ctk.CTkScrollableFrame(modal)
         scroll.pack(fill="both", expand=True, padx=10, pady=10)
     
+        # Define button colors for each tag type (background, hover, text)
+        button_styles = {
+            "red": {"fg": "#FFEBEE", "hover": "#FFCDD2", "text": "#C62828"},      # Light red bg, dark red text
+            "green": {"fg": "#E8F5E9", "hover": "#C8E6C9", "text": "#2E7D32"},    # Light green bg, dark green text
+            "yellow": {"fg": "#FFF8E1", "hover": "#FFECB3", "text": "#F57F17"}    # Light yellow bg, dark yellow text
+        }
+        
         color_info = [("red", "Red · Very Important"), ("green", "Green · Important"), ("yellow", "Yellow · Review")]
         for color, label_text in color_info:
             entries = grouped[color]
             if not entries:
                 continue
             section = ctk.CTkFrame(scroll, fg_color="transparent")
-            section.pack(fill="x", pady=(0, 8))
+            section.pack(fill="x", pady=(0, 12))
             ctk.CTkLabel(section, text=label_text, text_color=TAG_COLORS.get(color, "#ffffff"),
                           font=("Segoe UI", 14, "bold")).pack(anchor="w", pady=2)
+            
+            style = button_styles.get(color, {"fg": "#F0F0F0", "hover": "#E0E0E0", "text": "#333333"})
             for path, note in entries:
                 row = ctk.CTkFrame(section, fg_color="transparent")
-                row.pack(fill="x", pady=1)
+                row.pack(fill="x", pady=2)
                 btn = ctk.CTkButton(row, text=os.path.basename(path) or path, anchor="w",
                                     command=lambda p=path: self.open_tagged_file(p),
-                                    fg_color=THEMES[self.current_theme]["card"],
-                                    hover_color=THEMES[self.current_theme]["hover"],
-                                    text_color=THEMES[self.current_theme]["text"],
-                                    corner_radius=6)
+                                    fg_color=style["fg"],
+                                    hover_color=style["hover"],
+                                    text_color=style["text"],
+                                    border_width=1,
+                                    border_color=TAG_COLORS.get(color, "#CCCCCC"),
+                                    corner_radius=6,
+                                    height=36)
                 btn.pack(side="left", fill="x", expand=True)
                 if note:
-                    ctk.CTkLabel(row, text=f"({note})", text_color=THEMES[self.current_theme]["subtext"],
+                    ctk.CTkLabel(row, text=f"({note})", text_color=style["text"],
                                   font=("Segoe UI", 10)).pack(side="right", padx=(8, 0))
     
         ctk.CTkButton(modal, text="Close", command=modal.destroy).pack(pady=(8, 10))
