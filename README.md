@@ -2,7 +2,7 @@
 
 This repository contains artifacts to augment the project reporting with architecture diagrams and a plan document.
 
-Artifacs
+Artifacts
 - [`plan.md`](plan.md) – Plan outlining goals, milestones and ownership.
 - [`diagrams/architecture.mmd`](diagrams/architecture.mmd) – Mermaid diagram for Architecture.
 - [`diagrams/data_flow.mmd`](diagrams/data_flow.mmd) – Mermaid diagram for Data Flow.

@@ -1,5 +1,6 @@
 import math
 import os
+import tkinter as tk
 import customtkinter as ctk
 from tkinter import ttk, messagebox
 
@@ -132,8 +133,9 @@ class WorkDashboard(ctk.CTk):
             panel.path_label.configure(text_color=t["subtext"])
             panel.btn_open_folder.configure(fg_color=t["bg"], text_color=t["text"], hover_color=t["hover"])
             panel.btn_focus.configure(border_color=t["subtext"], text_color=t["text"])
-            panel.stats_label.configure(text_color=t["subtext"])
-            panel.stats_canvas.configure(bg=t["bg"])
+            # Update analytics bar theme
+            panel.analytics_bar.stats_label.configure(text_color=t["subtext"])
+            panel.analytics_bar.stats_canvas.configure(bg=t["bg"])
         
         # Update treeview styles
         self.update_global_styles()
