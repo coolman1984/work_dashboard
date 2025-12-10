@@ -370,7 +370,16 @@ class WorkDashboard(ctk.CTk):
         Load tagged file data from file_tags.json.
         Returns a dict mapping file paths to metadata dicts.
         """
-        tags_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "file_tags.json")
+        # Handle both .exe and normal Python execution
+        import sys
+        if getattr(sys, 'frozen', False):
+            # Running as .exe - use executable directory
+            base_dir = os.path.dirname(sys.executable)
+        else:
+            # Running as script - use script directory
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        
+        tags_path = os.path.join(base_dir, "file_tags.json")
         try:
             with open(tags_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
