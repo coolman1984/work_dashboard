@@ -7,6 +7,7 @@ from tkinter import ttk, messagebox
 from config.manager import ConfigManager
 from ui.styles import THEMES, ACCENT_COLORS, TAG_COLORS
 from ui.folder_card import FolderCard
+from ui.tagged_files_dialog import TaggedFilesDialog
 import json
 from utils.files import open_path
 
@@ -365,109 +366,9 @@ class WorkDashboard(ctk.CTk):
     def refresh_all(self): 
         for p in self.panels: p.refresh_files()
 
-    def load_tagged_files(self):
-        """
-        Load tagged file data from file_tags.json.
-        Returns a dict mapping file paths to metadata dicts.
-        """
-        # Handle both .exe and normal Python execution
-        import sys
-        if getattr(sys, 'frozen', False):
-            # Running as .exe - use executable directory
-            base_dir = os.path.dirname(sys.executable)
-        else:
-            # Running as script - use script directory
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        
-        tags_path = os.path.join(base_dir, "file_tags.json")
-        try:
-            with open(tags_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if not isinstance(data, dict):
-                    raise ValueError("file_tags.json must contain a JSON object")
-                return data
-        except FileNotFoundError:
-            messagebox.showerror("Error", f"Tag file not found: {tags_path}")
-            return {}
-        except (json.JSONDecodeError, ValueError) as e:
-            messagebox.showerror("Error", f"Failed to parse tag file: {e}")
-            return {}
-    
-    def open_tagged_file(self, path: str):
-        """
-        Open a tagged file. Uses os.startfile on Windows,
-        falling back to utils.files.open_path if needed.
-        """
-        try:
-            if os.name == "nt":
-                os.startfile(path)
-            else:
-                open_path(path)
-        except Exception as e:
-            messagebox.showerror("Error", f"Unable to open file: {e}")
-    
     def show_tagged_files(self):
-        tags = self.load_tagged_files()
-        if not tags:
-            messagebox.showinfo("Tagged Files", "No tagged files available.")
-            return
-    
-        # Group by color
-        grouped = {"red": [], "green": [], "yellow": []}
-        for path, meta in tags.items():
-            color = meta.get("color")
-            if color in grouped:
-                grouped[color].append((path, meta.get("note", "")))
-    
-        if not any(grouped.values()):
-            messagebox.showinfo("Tagged Files", "No red/green/yellow tags available yet.")
-            return
-    
-        modal = ctk.CTkToplevel(self)
-        modal.title("Tagged Files")
-        modal.geometry("520x520")
-        modal.transient(self)
-        modal.attributes('-topmost', True)
-    
-        scroll = ctk.CTkScrollableFrame(modal)
-        scroll.pack(fill="both", expand=True, padx=10, pady=10)
-    
-        # Define button colors for each tag type (background, hover, text)
-        button_styles = {
-            "red": {"fg": "#FFEBEE", "hover": "#FFCDD2", "text": "#C62828"},      # Light red bg, dark red text
-            "green": {"fg": "#E8F5E9", "hover": "#C8E6C9", "text": "#2E7D32"},    # Light green bg, dark green text
-            "yellow": {"fg": "#FFF8E1", "hover": "#FFECB3", "text": "#F57F17"}    # Light yellow bg, dark yellow text
-        }
-        
-        color_info = [("red", "Red · Very Important"), ("green", "Green · Important"), ("yellow", "Yellow · Review")]
-        for color, label_text in color_info:
-            entries = grouped[color]
-            if not entries:
-                continue
-            section = ctk.CTkFrame(scroll, fg_color="transparent")
-            section.pack(fill="x", pady=(0, 12))
-            ctk.CTkLabel(section, text=label_text, text_color=TAG_COLORS.get(color, "#ffffff"),
-                          font=("Segoe UI", 14, "bold")).pack(anchor="w", pady=2)
-            
-            style = button_styles.get(color, {"fg": "#F0F0F0", "hover": "#E0E0E0", "text": "#333333"})
-            for path, note in entries:
-                row = ctk.CTkFrame(section, fg_color="transparent")
-                row.pack(fill="x", pady=2)
-                btn = ctk.CTkButton(row, text=os.path.basename(path) or path, anchor="w",
-                                    command=lambda p=path: self.open_tagged_file(p),
-                                    fg_color=style["fg"],
-                                    hover_color=style["hover"],
-                                    text_color=style["text"],
-                                    border_width=1,
-                                    border_color=TAG_COLORS.get(color, "#CCCCCC"),
-                                    corner_radius=6,
-                                    height=36)
-                btn.pack(side="left", fill="x", expand=True)
-                if note:
-                    ctk.CTkLabel(row, text=f"({note})", text_color=style["text"],
-                                  font=("Segoe UI", 10)).pack(side="right", padx=(8, 0))
-    
-        ctk.CTkButton(modal, text="Close", command=modal.destroy).pack(pady=(8, 10))
+        """Show the improved Tagged Files Dialog."""
+        TaggedFilesDialog(self, self.current_theme, self.base_font_size)
 
     def save_config(self): ConfigManager.save_config(self.config_data)
     def on_closing(self):
